@@ -1,0 +1,30 @@
+{
+  "name": "bonus_chatapp",
+  "version": "1.0.0",
+  "description": "\"A chat app for chatting\"",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pranjalpathak26051998/ChatAppInRoom.git"
+  },
+  "author": "\"Pranjal Pathak\"",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pranjalpathak26051998/ChatAppInRoom/issues"
+  },
+  "homepage": "https://github.com/pranjalpathak26051998/ChatAppInRoom#readme",
+  "dependencies": {
+    "dotenv": "^16.1.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
+    "mongoose": "^7.2.2",
+    "socket.io": "^4.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
