@@ -1,24 +1,57 @@
 const chatForm=document.getElementById('chat-form');
-
+const chatMessages=document.querySelector('.chat-messages')
+//GET username and room from URL
+const {username,room}=Qs.parse(location.search,{
+ ignoreQueryPrefix:true
+});
+//console.log(username,room)
 const socket = io();
 
-socket.on('message',message=>{
+
+//Join chatRoom
+
+socket.emit('joinRoom',{username,room})
+
+//Message from server
+socket.on('message', message=>{
     console.log(message) //getting message from the localhost or server
+    outputMessage(message)
+    //scroll down
+ chatMessages.scrollTop=chatMessages.scrollHeight;
 })
 //Message submit
-chatForm.addEventListener('submit',(e)=>{
+chatForm.addEventListener('submit',e=>{
     e.preventDefault();
-
+//get message text  from client
     const msg =e.target.elements.msg.value;
+//emit message to the server
+    socket.emit('chatMessage',msg);
+  //clear inputs
+  e.target.elements.msg.value='';
+  e.target.elements.msg.focus()
 
-    console.log(msg);
-})
+});
+
+//output message to DOM
+
+//since message is now an object therefor message.command is being used
+function outputMessage(message){
+const div=  document.createElement('div')
+div.classList.add('message')
+div.innerHTML= ` <p class="meta">${message.username}<span>${message.time}</span></p>
+<p class="text">
+    ${message.text}
+</p> `;
+  document.querySelector('.chat-messages').appendChild(div) //whenever we create a message it adds new child div
+ // document.getElementsByClassName('chat-messages').appendChild(div)
+}
 
 
 
 
-// ---------------------------------------------------------------------
- //const chatForm = document.getElementById('chat-form');
+
+// // ---------------------------------------------------------------------
+//  const chatForm = document.getElementById('chat-form');
 // const chatMessages = document.querySelector('.chat-messages');
 // const roomName = document.getElementById('room-name');
 // const userList = document.getElementById('users');
@@ -28,7 +61,7 @@ chatForm.addEventListener('submit',(e)=>{
 //   ignoreQueryPrefix: true,
 // });
 
- //const socket = io();
+//  const socket = io();
 
 // // Join chatroom
 // socket.emit('joinRoom', { username, room });
