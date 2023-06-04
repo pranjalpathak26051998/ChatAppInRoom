@@ -5,7 +5,7 @@ const mongoose=require('mongoose')
 const socketio=require('socket.io')
 require('dotenv').config()
 const formatMessage=require('./src/utils/messages')
-const {userJoin,getCurrentUser}=require('./src/utils/users')
+const {userJoin, getCurrentUser,userLeave,getRoomUsers}=require('./src/utils/users')
 // const { setTheUsername } = require('whatwg-url')
 
 const app= express()
@@ -35,8 +35,12 @@ io.on('connection',socket=>{
     console.log("New WEB-SOCKET connection successful");
     // sending message to the console of the JS from server to the client
    //to single client
-  const user=userJoin(socket.id,username,room);
+  //  ..................----......----------------........
+   const user=userJoin(socket.id,username,room);
+  //const user=userJoin(id,username,room);
+  // ...................................-----------------
   socket.join(user.room);
+//welcoming the current user
 
    socket.emit('message',formatMessage( botName ,"Welcome to chat App"));// emit an event to the socket
    // socket.emit("message","Welcome to chat App")//welcoming the current or new user
@@ -47,24 +51,49 @@ io.on('connection',socket=>{
 // to all connected clients in the "news" room
                  // io.to("broadcast").emit("hello");
      // to all the clients
-     socket.broadcast.to(user.room).emit('message',formatMessage( botName ,`${user.username} has joined the chat`));
-     //socket.emit('broadcast',"A new user has joined the chat");
-   //  console.log("a new user is connected to the app")
-     //now in general
+
+     //Broadcast when the user connects.....
+     socket.broadcast
+     .to(user.room)
+     .emit('message',
+     formatMessage( botName ,
+      `${user.username} has joined the chat`));
+     
+      //send users and room info
+    io.to(user.room).emit('roomUsers',{
+       
+      room:user.room,
+      users:   getRoomUsers(user.room)  
+    });
+
+    
      //io.emit()-->this will run like infinite loop and will deliver the connections on and on 
 
    //all these above was for connection of a client
    })
    //Listen for chatMessage
-   socket.on('chatMessage',msg=>{
-    // console.log(msg);
-    //emit back to the client
-    io.emit('message',formatMessage( 'USER',msg));
+       socket.on('chatMessage',msg=>{
+        const user=getCurrentUser(socket.id);
+
+       io.to(user.room).emit('message',formatMessage( user.username,msg));
    })
    //Runs when client disconnects
    socket.on('disconnect', ()=>{
-    //console.log("a user has left the chat")
-    io.emit('message',formatMessage( botName ,`${user.username} left the chat`))
+    const  user=userLeave(socket.id)
+    if(user){
+      io.to(user.room).emit('message',
+      formatMessage( botName ,
+        ` ${user.username} has left the chat`))
+      
+        
+        //Send users and room info
+        io.to(user.room).emit('roomUsers',{
+           room:user.room,
+           users:   getRoomUsers(user.room)  
+        });
+    }
+    
+    
    })
 });   
 
