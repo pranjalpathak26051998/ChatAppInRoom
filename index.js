@@ -21,14 +21,6 @@ app.use(express.static(path.join(__dirname,'public')))
 // ====================================================================================================
 //run when the client is connected
         const io = socketio(server);
-// io.on('connection', socket => {
-//     socket.emit('request', /* … */); // emit an event to the socket
-//     io.emit('broadcast', /* … */); // emit an event to all connected sockets
-//     socket.on('reply', () => { /* … */ }); // listen to the event
-//   });
-
-
-
 //welcome the current and new user
 io.on('connection',socket=>{
    socket.on('joinRoom',({username,room})=>{
@@ -43,15 +35,6 @@ io.on('connection',socket=>{
 //welcoming the current user
 
    socket.emit('message',formatMessage( botName ,"Welcome to chat App"));// emit an event to the socket
-   // socket.emit("message","Welcome to chat App")//welcoming the current or new user
-     //broadCast when a user connects
-     // to all connected clients
-                     //io.emit("hello");
-
-// to all connected clients in the "news" room
-                 // io.to("broadcast").emit("hello");
-     // to all the clients
-
      //Broadcast when the user connects.....
      socket.broadcast
      .to(user.room)
